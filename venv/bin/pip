@@ -1,0 +1,12 @@
+#!/Users/wrlu/Documents/CAUC-项目科研/民航机场监控摄像头安全漏洞检测系统研究与实现/IPCameraScanner/venv/bin/python -x
+# EASY-INSTALL-ENTRY-SCRIPT: 'pip==10.0.1','console_scripts','pip'
+__requires__ = 'pip==10.0.1'
+import re
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(
+        load_entry_point('pip==10.0.1', 'console_scripts', 'pip')()
+    )

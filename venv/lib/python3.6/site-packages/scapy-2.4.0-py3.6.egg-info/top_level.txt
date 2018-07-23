@@ -1,0 +1,12 @@
+scapy
+scapy/arch
+scapy/arch/bpf
+scapy/arch/windows
+scapy/asn1
+scapy/contrib
+scapy/layers
+scapy/layers/tls
+scapy/layers/tls/crypto
+scapy/modules
+scapy/modules/krack
+scapy/tools

@@ -1,0 +1,31 @@
+Metadata-Version: 1.2
+Name: scapy
+Version: 2.4.0
+Summary: Scapy: interactive packet manipulation tool
+Home-page: http://www.secdev.org/projects/scapy
+Author: Philippe BIONDI
+Author-email: guillaume@valadon.net
+Maintainer: Pierre LALET, Guillaume VALADON
+License: GPLv2
+Download-URL: https://github.com/secdev/scapy/tarball/master
+Description: UNKNOWN
+Keywords: network
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: System Administrators
+Classifier: Intended Audience :: Telecommunications Industry
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Topic :: Security
+Classifier: Topic :: System :: Networking
+Classifier: Topic :: System :: Networking :: Monitoring
