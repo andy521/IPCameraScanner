@@ -6,7 +6,6 @@
 # 	在本机37020端口监听回复包，解析UDP负载中的XML内容
 # 2. HTTP80端口扫描：判断HTTP响应的Server字段
 
-import sys
 import uuid
 from scapy.all import *
 from socket import *
