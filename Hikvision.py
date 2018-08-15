@@ -8,7 +8,6 @@
 
 import uuid
 from scapy.all import *
-from socket import *
 from xml.dom import minidom
 from AbstractScanner import *
 
@@ -16,7 +15,7 @@ from AbstractScanner import *
 # 扫描方式1
 class HikvisionUDPScanner(AbstractScanner):
 
-    def getDiscoverXml(self):
+    def _get_discover_xml(self):
         # 标准XML声明
         standard = '<?xml version="1.0" encoding="utf-8"?>'
         # 创建XML根节点Probe
@@ -24,23 +23,23 @@ class HikvisionUDPScanner(AbstractScanner):
         dom = impl.createDocument(None, 'Probe', None)
         root = dom.documentElement
         # 创建子结点Uuid
-        uuidE = dom.createElement('Uuid')
-        uuidT = dom.createTextNode(str(uuid.uuid1()).upper())
-        uuidE.appendChild(uuidT)
-        root.appendChild(uuidE)
+        uuid_e = dom.createElement('Uuid')
+        uuid_t = dom.createTextNode(str(uuid.uuid1()).upper())
+        uuid_e.appendChild(uuid_t)
+        root.appendChild(uuid_e)
         # 创建子结点Types
-        typesE = dom.createElement('Types')
-        typesT = dom.createTextNode('inquiry')
-        typesE.appendChild(typesT)
-        root.appendChild(typesE)
+        types_e = dom.createElement('Types')
+        types_t = dom.createTextNode('inquiry')
+        types_e.appendChild(types_t)
+        root.appendChild(types_e)
         # 合成标准XML字符串
-        discoverXmlString = standard + root.toxml()
-        return discoverXmlString
+        result = standard + root.toxml()
+        return result
 
-    def getDiscoverPackage(self):
+    def get_discover_pkg(self):
         # 封装UDP报文
-        discoverXmlString = self.getDiscoverXml()
-        pkg = IP() / UDP() / discoverXmlString
+        xml_str = self._get_discover_xml()
+        pkg = IP() / UDP() / xml_str
         # 目的地址为组播地址
         pkg.dst = '239.255.255.250'
         # 源端口37020
@@ -49,24 +48,23 @@ class HikvisionUDPScanner(AbstractScanner):
         pkg.dport = 37020
         return pkg
 
-    def sendPackage(self, pkg, time):
+    def send(self, pkg, time):
+        if time <= 0:
+            return
         for i in range(time):
             # verbose参数控制是否显示发送回显
             send(pkg, 1, verbose=1)
 
-    def bindUDPPort(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.bind(('', 37020))
-
 
 # 扫描方式2
 class HikvisionHTTPScanner(AbstractScanner):
-    def getDiscoverPackage(self):
-        pkg = IP() / TCP() / HTTP()
-		pkg.dst = '1.1.1.1'
-		pkg.dport = 80
 
-    def sendPackage(self, pkg, time):
+    def get_discover_pkg(self):
+        pkg = IP() / TCP() / HTTP()
+        pkg.dst = '1.1.1.1'
+        pkg.dport = 80
+
+    def send(self, pkg, time):
         for i in range(time):
             # verbose参数控制是否显示发送回显
             send(pkg, 1, verbose=1)

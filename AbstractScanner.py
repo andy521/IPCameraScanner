@@ -7,9 +7,9 @@ class AbstractScanner:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def getDiscoverPackage(self):
+    def get_discover_pkg(self):
         pass
 
     @abstractmethod
-    def sendPackage(self, pkg, time):
+    def send(self, pkg, time):
         pass
