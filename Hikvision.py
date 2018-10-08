@@ -64,7 +64,7 @@ class HikvisionUDPScanner(AbstractScanner):
         # 显示数据包并确定校验和
         pkg.show2()
         # 创建监听线程
-        self.listenthread = threading.Thread(target=self.listen(), name='ListenThread')
+        self.listenthread = threading.Thread(target=self.listen, name='ListenThread')
         # 设置为后台线程
         self.listenthread.setDaemon(True)
         # 启动监听线程

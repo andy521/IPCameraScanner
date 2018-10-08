@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6a9113c7-ce8b-4d8b-bb33-df15a4615da1" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hikvision.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hikvision.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -89,13 +88,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Hikvision.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="102" column="13" selection-start-line="102" selection-start-column="13" selection-end-line="102" selection-end-column="13" />
+            <state relative-caret-position="138">
+              <caret line="82" column="28" lean-forward="true" selection-start-line="82" selection-start-column="28" selection-end-line="82" selection-end-column="28" />
               <folding>
                 <element signature="e#216#227#0" expanded="true" />
-                <marker date="1538989088802" expanded="true" signature="2448:2453" ph="..." />
-                <marker date="1538989088802" expanded="true" signature="3503:3693" ph="..." />
-                <marker date="1538989088802" expanded="true" signature="3688:3693" ph="..." />
+                <marker date="1538993799615" expanded="true" signature="2446:2451" ph="..." />
+                <marker date="1538993799615" expanded="true" signature="3501:3691" ph="..." />
+                <marker date="1538993799615" expanded="true" signature="3686:3691" ph="..." />
               </folding>
             </state>
           </provider>
@@ -134,7 +133,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-6" />
     <option name="y" value="51" />
     <option name="width" value="1026" />
@@ -234,16 +233,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
+    <frame x="-7" y="-7" width="1295" height="695" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14932486" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14932486" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.534375" weight="0.36120996" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.534375" visible="true" weight="0.36120996" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3985765" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -284,13 +283,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Hikvision.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="102" column="13" selection-start-line="102" selection-start-column="13" selection-end-line="102" selection-end-column="13" />
+        <state relative-caret-position="138">
+          <caret line="82" column="28" lean-forward="true" selection-start-line="82" selection-start-column="28" selection-end-line="82" selection-end-column="28" />
           <folding>
             <element signature="e#216#227#0" expanded="true" />
-            <marker date="1538989088802" expanded="true" signature="2448:2453" ph="..." />
-            <marker date="1538989088802" expanded="true" signature="3503:3693" ph="..." />
-            <marker date="1538989088802" expanded="true" signature="3688:3693" ph="..." />
+            <marker date="1538993799615" expanded="true" signature="2446:2451" ph="..." />
+            <marker date="1538993799615" expanded="true" signature="3501:3691" ph="..." />
+            <marker date="1538993799615" expanded="true" signature="3686:3691" ph="..." />
           </folding>
         </state>
       </provider>
