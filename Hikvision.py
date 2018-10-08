@@ -18,27 +18,28 @@ from AbstractScanner import *
 class HikvisionUDPScanner(AbstractScanner):
     port: int = 37020
     flag: bool = 0
+    listenthread: threading.Thread
 
     @staticmethod
     def get_discover_xml():
         # 标准XML声明
         standard = '<?xml version="1.0" encoding="utf-8"?>'
         # 创建XML根节点Probe
-        impl = minidom.getDOMImplementation()
-        dom = impl.createDocument(None, 'Probe', None)
-        root = dom.documentElement
+        dom_impl = minidom.getDOMImplementation()
+        send_document = dom_impl.createDocument(None, 'Probe', None)
+        send_root = send_document.documentElement
         # 创建子结点Uuid
-        uuid_e = dom.createElement('Uuid')
-        uuid_t = dom.createTextNode(str(uuid.uuid1()).upper())
+        uuid_e = send_document.createElement('Uuid')
+        uuid_t = send_document.createTextNode(str(uuid.uuid1()).upper())
         uuid_e.appendChild(uuid_t)
-        root.appendChild(uuid_e)
+        send_root.appendChild(uuid_e)
         # 创建子结点Types
-        types_e = dom.createElement('Types')
-        types_t = dom.createTextNode('inquiry')
+        types_e = send_document.createElement('Types')
+        types_t = send_document.createTextNode('inquiry')
         types_e.appendChild(types_t)
-        root.appendChild(types_e)
+        send_root.appendChild(types_e)
         # 合成标准XML字符串
-        result = standard + root.toxml()
+        result = standard + send_root.toxml()
         return result
 
     def get_discover_pkg(self):
@@ -62,29 +63,53 @@ class HikvisionUDPScanner(AbstractScanner):
         pkg = self.get_discover_pkg()
         # 显示数据包并确定校验和
         pkg.show2()
-        # 开始监听接收
-        self.listen()
+        # 创建监听线程
+        self.listenthread = threading.Thread(target=self.listen(), name='ListenThread')
+        # 设置为后台线程
+        self.listenthread.setDaemon(True)
+        # 启动监听线程
+        self.listenthread.start()
         for i in range(repeats):
             # verbose参数控制是否显示发送回显
             send(pkg, 1, verbose=1)
 
     def listen(self):
-        # 创建socketserver对象，使用多线程UDP服务器
-        server = socketserver.ThreadingUDPServer(('', self.port), self.UDPScanHandler)
+        # 创建ThreadingUDPServer对象，也就是多线程UDP服务器
+        server = socketserver.ThreadingUDPServer(('', self.port), UDPScanHandler(delegate=self))
+        # UDP服务器开始服务
         server.serve_forever()
-        server.server_close()
-
-    class UDPScanHandler(socketserver.BaseRequestHandler):
-        def handle(self):
-            while True:
-                data = self.request.recv(4096).strip()
-                print(self.request + ' ' + data)
 
     def report(self):
+        # 读取结果时，首先阻塞线程，再进行读取
+        self.listenthread.join(15)
         if self.flag is True:
             return ''
         else:
             return 'Still running'
+
+
+class UDPScanHandler(socketserver.BaseRequestHandler):
+    delegate: HikvisionUDPScanner
+
+    def __init__(self, delegate):
+        self.delegate = delegate
+
+    # 服务代码，由ThreadingUDPServer自动进行多线程托管
+    def handle(self):
+        data = self.request[0].strip()
+        print(data)
+        self.delegate.parser(data)
+
+    # 解析XML文本
+    @staticmethod
+    def parser(data):
+        assert isinstance(data, str)
+        recv_xml = minidom.parseString(data)
+        recv_document = recv_xml.documentElement
+        if recv_document.hasAttribute('Probe'):
+            return recv_document.getAttribute('Probe')
+        else:
+            return 'error'
 
 
 # HTTP 80端口扫描：判断HTTP响应的Server字段
@@ -95,10 +120,9 @@ class HikvisionHTTPScanner(AbstractScanner):
     flag: bool = 0
 
     def __init__(self, dst_ip, dport, use_ssl=False):
-        assert isinstance(dst_ip, str)
         assert isinstance(dport, int)
         assert isinstance(use_ssl, bool)
-        super.__init__(dst_ip=dst_ip)
+        AbstractScanner.__init__(self, dst_ip)
         self.dport = dport
         self.use_ssl = use_ssl
 
@@ -108,19 +132,23 @@ class HikvisionHTTPScanner(AbstractScanner):
         if repeats <= 0:
             return
         for i in range(repeats):
-            if self.dport == 80 and self.use_ssl is False:
-                response = requests.get(url='http://' + self.dstIP)
-            elif self.dport == 443 and self.use_ssl is True:
-                response = requests.get(url='https://' + self.dstIP)
-            elif self.use_ssl is False:
-                response = requests.get(url='http://' + self.dstIP + ':' + self.dport)
-            elif self.use_ssl is True:
-                response = requests.get(url='https://' + self.dstIP + ':' + self.dport)
-
-            if response.status_code == 200:
-                self.header_server = response.headers.get('Server')
+            try:
+                if self.dport == 80 and self.use_ssl is False:
+                    response = requests.get(url='http://' + self.dstIP)
+                elif self.dport == 443 and self.use_ssl is True:
+                    response = requests.get(url='https://' + self.dstIP)
+                elif self.use_ssl is False:
+                    response = requests.get(url='http://' + self.dstIP + ':' + self.dport)
+                elif self.use_ssl is True:
+                    response = requests.get(url='https://' + self.dstIP + ':' + self.dport)
+            except requests.exceptions.ConnectionError as e:
+                print('The target server seems down, details:')
+                print(e)
             else:
-                print('Receive HTTP Status ' + response.status_code)
+                if response.status_code == 200:
+                    self.header_server = response.headers.get('Server')
+                else:
+                    print('Receive HTTP Status ' + response.status_code)
 
         self.flag = 1
 
