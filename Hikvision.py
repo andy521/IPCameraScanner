@@ -19,6 +19,7 @@ class HikvisionUDPScanner(AbstractScanner):
     port: int = 37020
     flag: bool = 0
     listenthread: threading.Thread
+    stop_sniff = threading.Event()
 
     @staticmethod
     def get_discover_xml():
@@ -79,9 +80,27 @@ class HikvisionUDPScanner(AbstractScanner):
         # UDP服务器开始服务
         server.serve_forever()
 
+    def sniff_recv(self):
+        test = IP()
+        test.show2()
+        local_ip = test.src
+        sniff(prn=lambda x: self.parser(str(x.load, 'utf-8')), filter='Dst host '+local_ip+' and Udp port 37020', stop_filter=lambda x: self.stop_sniff.is_set())
+
+    @staticmethod
+    def parser(data):
+        assert isinstance(data, str)
+        # 去除前面的XML描述符
+        data = data[38:]
+        recv_xml = minidom.parseString(data)
+        recv_document = recv_xml.documentElement
+        if recv_document.hasAttribute('ProbeMatch'):
+            return recv_document.getAttribute('ProbeMatch')
+        else:
+            return 'error'
+
     def report(self):
         # 读取结果时，首先阻塞线程，再进行读取
-        self.listenthread.join(15)
+        self.listenthread.join(10)
         if self.flag is True:
             return ''
         else:
@@ -99,17 +118,6 @@ class UDPScanHandler(socketserver.BaseRequestHandler):
         data = self.request[0].strip()
         print(data)
         self.delegate.parser(data)
-
-    # 解析XML文本
-    @staticmethod
-    def parser(data):
-        assert isinstance(data, str)
-        recv_xml = minidom.parseString(data)
-        recv_document = recv_xml.documentElement
-        if recv_document.hasAttribute('Probe'):
-            return recv_document.getAttribute('Probe')
-        else:
-            return 'error'
 
 
 # HTTP 80端口扫描：判断HTTP响应的Server字段
@@ -141,9 +149,9 @@ class HikvisionHTTPScanner(AbstractScanner):
                     response = requests.get(url='http://' + self.dstIP + ':' + self.dport)
                 elif self.use_ssl is True:
                     response = requests.get(url='https://' + self.dstIP + ':' + self.dport)
-            except requests.exceptions.ConnectionError as e:
+            except requests.exceptions.ConnectionError as error:
                 print('The target server seems down, details:')
-                print(e)
+                print(error)
             else:
                 if response.status_code == 200:
                     self.header_server = response.headers.get('Server')
