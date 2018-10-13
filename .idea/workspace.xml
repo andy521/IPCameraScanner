@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="6a9113c7-ce8b-4d8b-bb33-df15a4615da1" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AbstractScanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/AbstractScanner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hikvision.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hikvision.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/IPCameraScanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/IPCameraScanner.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -51,18 +53,18 @@
           <entry key="project.closed" value="2" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.3" value="2" />
-          <entry key="project.open.time.4" value="3" />
-          <entry key="project.opened" value="6" />
+          <entry key="project.open.time.4" value="5" />
+          <entry key="project.opened" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="3999" />
+          <entry key="py" value="5198" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="3999" />
+          <entry key="Python" value="5198" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -80,10 +82,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/IPCameraScanner.py">
+        <entry file="file://$PROJECT_DIR$/AbstractScanner.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="154">
-              <caret line="7" selection-start-line="7" selection-end-line="7" />
+              <caret line="18" column="15" lean-forward="true" selection-start-line="18" selection-start-column="15" selection-end-line="18" selection-end-column="15" />
             </state>
           </provider>
         </entry>
@@ -91,38 +93,25 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Hikvision.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="212">
-              <caret line="73" column="25" lean-forward="true" selection-start-line="73" selection-start-column="25" selection-end-line="73" selection-end-column="25" />
+            <state relative-caret-position="176">
+              <caret line="101" column="27" lean-forward="true" selection-start-line="101" selection-start-column="27" selection-end-line="101" selection-end-column="27" />
               <folding>
                 <element signature="e#215#226#0" expanded="true" />
-                <marker date="1539170673839" expanded="true" signature="2779:3117" ph="..." />
-                <marker date="1539170673839" expanded="true" signature="3112:3117" ph="..." />
-                <marker date="1539170673839" expanded="true" signature="3837:4027" ph="..." />
-                <marker date="1539170673839" expanded="true" signature="4022:4027" ph="..." />
+                <marker date="1539412965870" expanded="true" signature="2408:2622" ph="..." />
+                <marker date="1539412965870" expanded="true" signature="2665:3213" ph="..." />
+                <marker date="1539412965870" expanded="true" signature="3208:3213" ph="..." />
+                <marker date="1539412965870" expanded="true" signature="3665:3855" ph="..." />
+                <marker date="1539412965870" expanded="true" signature="3850:3855" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/IPCameraScannerGUI.py">
+        <entry file="file://$PROJECT_DIR$/IPCameraScanner.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="9" column="31" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="31" />
-              <folding>
-                <element signature="e#1#15#0" expanded="true" />
-                <marker date="1539091093878" expanded="true" signature="579:584" ph="..." />
-                <marker date="1539091093878" expanded="true" signature="810:822" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AbstractScanner.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="15" column="29" lean-forward="true" selection-start-line="15" selection-start-column="29" selection-end-line="15" selection-end-column="29" />
+            <state relative-caret-position="132">
+              <caret line="6" column="19" lean-forward="true" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -145,16 +134,16 @@
       <list>
         <option value="$PROJECT_DIR$/TestSniff.py" />
         <option value="$PROJECT_DIR$/TestCapture.py" />
-        <option value="$PROJECT_DIR$/AbstractScanner.py" />
         <option value="$PROJECT_DIR$/IPCameraScannerGUI.py" />
         <option value="$PROJECT_DIR$/IPCameraScanner.py" />
+        <option value="$PROJECT_DIR$/AbstractScanner.py" />
         <option value="$PROJECT_DIR$/Hikvision.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="760" />
-    <option name="y" value="-29" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="759" />
+    <option name="y" value="-11" />
     <option name="width" value="1026" />
     <option name="height" value="768" />
   </component>
@@ -280,12 +269,12 @@
     <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16362192" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16123907" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.534375" visible="true" weight="0.22064057" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.534375" visible="true" weight="0.2455516" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3985765" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -311,16 +300,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/IPCameraScanner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/IPCameraScannerGUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
+        <state relative-caret-position="132">
           <caret line="9" column="31" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="31" />
           <folding>
             <element signature="e#1#15#0" expanded="true" />
@@ -330,23 +312,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/IPCameraScanner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" column="19" lean-forward="true" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/AbstractScanner.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="15" column="29" lean-forward="true" selection-start-line="15" selection-start-column="29" selection-end-line="15" selection-end-column="29" />
+        <state relative-caret-position="154">
+          <caret line="18" column="15" lean-forward="true" selection-start-line="18" selection-start-column="15" selection-end-line="18" selection-end-column="15" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Hikvision.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="212">
-          <caret line="73" column="25" lean-forward="true" selection-start-line="73" selection-start-column="25" selection-end-line="73" selection-end-column="25" />
+        <state relative-caret-position="176">
+          <caret line="101" column="27" lean-forward="true" selection-start-line="101" selection-start-column="27" selection-end-line="101" selection-end-column="27" />
           <folding>
             <element signature="e#215#226#0" expanded="true" />
-            <marker date="1539170673839" expanded="true" signature="2779:3117" ph="..." />
-            <marker date="1539170673839" expanded="true" signature="3112:3117" ph="..." />
-            <marker date="1539170673839" expanded="true" signature="3837:4027" ph="..." />
-            <marker date="1539170673839" expanded="true" signature="4022:4027" ph="..." />
+            <marker date="1539412965870" expanded="true" signature="2408:2622" ph="..." />
+            <marker date="1539412965870" expanded="true" signature="2665:3213" ph="..." />
+            <marker date="1539412965870" expanded="true" signature="3208:3213" ph="..." />
+            <marker date="1539412965870" expanded="true" signature="3665:3855" ph="..." />
+            <marker date="1539412965870" expanded="true" signature="3850:3855" ph="..." />
           </folding>
         </state>
       </provider>

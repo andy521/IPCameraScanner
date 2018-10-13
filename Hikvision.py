@@ -7,7 +7,6 @@
 # 	在本机任一端口（最好是37020）监听回复包，解析UDP负载中的XML内容
 # 2. HTTP 80端口扫描：判断HTTP响应的Server字段
 import uuid
-import socketserver
 import requests
 from scapy.all import *
 from xml.dom import minidom
@@ -17,8 +16,9 @@ from AbstractScanner import *
 # 官方SDAP扫描方式：发送组播UDP报文
 class HikvisionUDPScanner(AbstractScanner):
     port: int = 37020
-    flag: bool = 0
-    listenthread: threading.Thread
+    result: list = []
+    finish_flag: bool = False
+    listen_thread: threading.Thread
     stop_sniff = threading.Event()
 
     @staticmethod
@@ -55,77 +55,69 @@ class HikvisionUDPScanner(AbstractScanner):
         pkg.dport = self.port
         return pkg
 
-    def start(self, repeats):
-        assert isinstance(repeats, int)
-        if repeats <= 0:
-            print('Warning: The value of repeats is above zero, skipped.')
-            return
+    def start(self):
+        self.finish_flag = False
         # 获得发现数据包
         pkg = self.get_discover_pkg()
         # 显示数据包并确定校验和
         pkg.show2()
         # 创建监听线程
-        self.listenthread = threading.Thread(target=self.listen, name='ListenThread')
+        self.listen_thread = threading.Thread(target=self.listen, name='Thread-Listen')
         # 设置为后台线程
-        self.listenthread.setDaemon(True)
+        self.listen_thread.setDaemon(True)
         # 启动监听线程
-        self.listenthread.start()
-        for i in range(repeats):
-            # verbose参数控制是否显示发送回显
-            send(pkg, 1, verbose=1)
+        self.listen_thread.start()
+        # verbose参数控制是否显示发送回显
+        send(pkg, 1, verbose=0)
+        self.finish_flag = True
 
     def listen(self):
-        # 创建ThreadingUDPServer对象，也就是多线程UDP服务器
-        server = socketserver.ThreadingUDPServer(('', self.port), UDPScanHandler(delegate=self))
-        # UDP服务器开始服务
-        server.serve_forever()
-
-    def sniff_recv(self):
         test = IP()
-        test.show2()
         local_ip = test.src
-        sniff(prn=lambda x: self.parser(str(x.load, 'utf-8')), filter='Dst host '+local_ip+' and Udp port 37020', stop_filter=lambda x: self.stop_sniff.is_set())
+        sniff(prn=lambda x: self.handler(x),
+              filter='Dst host '+local_ip+' and Udp port 37020',
+              stop_filter=lambda x: self.stop_sniff.is_set())
+
+    def handler(self, pkg):
+        data = str(pkg.load, 'utf-8')
+        try:
+            dev_dict = HikvisionUDPScanner.parser(data)
+            self.result.append(dev_dict)
+        except TypeError as error:
+            print(error)
 
     @staticmethod
-    def parser(data):
+    def parser(data) -> dict:
         assert isinstance(data, str)
         # 去除前面的XML描述符
         data = data[38:]
-        recv_xml = minidom.parseString(data)
-        recv_document = recv_xml.documentElement
-        if recv_document.hasAttribute('ProbeMatch'):
-            return recv_document.getAttribute('ProbeMatch')
-        else:
-            return 'error'
-
-    def report(self):
-        # 读取结果时，首先阻塞线程，再进行读取
-        self.listenthread.join(10)
-        if self.flag is True:
-            return ''
-        else:
-            return 'Still running'
-
-
-class UDPScanHandler(socketserver.BaseRequestHandler):
-    delegate: HikvisionUDPScanner
-
-    def __init__(self, delegate):
-        self.delegate = delegate
-
-    # 服务代码，由ThreadingUDPServer自动进行多线程托管
-    def handle(self):
-        data = self.request[0].strip()
         print(data)
-        self.delegate.parser(data)
+        recv_xml = minidom.parseString(data)
+        recv_root = recv_xml.documentElement
+        dev_dict = {}
+        if recv_root.nodeName == 'ProbeMatch':
+            recv_childnodes = recv_root.childNodes
+            for childnode in recv_childnodes:
+                dev_dict[childnode.nodeName] = childnode.childNodes[0].data
+            return dev_dict
+        else:
+            raise TypeError('不是探测包的返回包，返回包的根结点名称必须是ProbeMatch')
+
+    def report(self) -> (bool, list):
+        if self.finish_flag is True:
+            # 读取结果时，首先设置信号量，停止sniff函数抓取包
+            self.stop_sniff.set()
+            return True, self.result
+        else:
+            return False, []
 
 
 # HTTP 80端口扫描：判断HTTP响应的Server字段
 class HikvisionHTTPScanner(AbstractScanner):
     dport: int = 0
-    header_server: str = ''
+    result: list = []
     use_ssl: bool = 0
-    flag: bool = 0
+    finish_flag: bool = False
 
     def __init__(self, dst_ip, dport, use_ssl=False):
         assert isinstance(dport, int)
@@ -134,37 +126,35 @@ class HikvisionHTTPScanner(AbstractScanner):
         self.dport = dport
         self.use_ssl = use_ssl
 
-    def start(self, repeats):
-        assert isinstance(repeats, int)
-        self.flag = 0
-        if repeats <= 0:
-            return
-        for i in range(repeats):
-            try:
-                if self.dport == 80 and self.use_ssl is False:
-                    response = requests.get(url='http://' + self.dstIP)
-                elif self.dport == 443 and self.use_ssl is True:
-                    response = requests.get(url='https://' + self.dstIP)
-                elif self.use_ssl is False:
-                    response = requests.get(url='http://' + self.dstIP + ':' + self.dport)
-                elif self.use_ssl is True:
-                    response = requests.get(url='https://' + self.dstIP + ':' + self.dport)
-            except requests.exceptions.ConnectionError as error:
-                print('The target server seems down, details:')
-                print(error)
-            else:
-                if response.status_code == 200:
-                    self.header_server = response.headers.get('Server')
-                else:
-                    print('Receive HTTP Status ' + response.status_code)
-
-        self.flag = 1
-
-    def report(self):
-        if self.flag is True:
-            if self.header_server == '':
-                return 'Destination: ' + self.dstIP + ' Type: ' + self.header_server
-            else:
-                return 'Not found'
+    def start(self):
+        self.finish_flag = False
+        try:
+            if self.dport == 80 and self.use_ssl is False:
+                response = requests.get(url='http://' + self.dstIP)
+            elif self.dport == 443 and self.use_ssl is True:
+                response = requests.get(url='https://' + self.dstIP)
+            elif self.use_ssl is False:
+                response = requests.get(url='http://' + self.dstIP + ':' + self.dport)
+            elif self.use_ssl is True:
+                response = requests.get(url='https://' + self.dstIP + ':' + self.dport)
+        except requests.exceptions.ConnectionError as error:
+            print('The target server seems down, details:')
+            print(error)
         else:
-            return 'Still running'
+            if response.status_code == 200:
+                self.result.append({'IP': self.dstIP,
+                                    'Port': self.dport,
+                                    'Server Header': response.headers.get('Server')})
+            else:
+                print('Receive HTTP Status ' + response.status_code)
+
+        self.finish_flag = True
+
+    def report(self) -> (bool, list):
+        if self.finish_flag is True:
+            if self.result == 'App-webs/':
+                return True, self.result
+            else:
+                return True, []
+        else:
+            return False, []

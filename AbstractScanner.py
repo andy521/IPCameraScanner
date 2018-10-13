@@ -13,10 +13,10 @@ class AbstractScanner:
 
     # 启动扫描
     @abstractmethod
-    def start(self, repeats):
+    def start(self):
         pass
 
     # 显示目标设备的信息
     @abstractmethod
-    def report(self) -> str:
+    def report(self) -> (bool, list):
         pass
