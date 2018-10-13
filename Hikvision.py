@@ -15,6 +15,7 @@ from AbstractScanner import *
 
 # 官方SDAP扫描方式：发送组播UDP报文
 class HikvisionUDPScanner(AbstractScanner):
+    local_ip: str = '127.0.0.1'
     port: int = 37020
     result: list = []
     finish_flag: bool = False
@@ -61,6 +62,8 @@ class HikvisionUDPScanner(AbstractScanner):
         pkg = self.get_discover_pkg()
         # 显示数据包并确定校验和
         pkg.show2()
+        # 设置本机IP
+        self.local_ip = pkg.src
         # 创建监听线程
         self.listen_thread = threading.Thread(target=self.listen, name='Thread-Listen')
         # 设置为后台线程
@@ -72,19 +75,22 @@ class HikvisionUDPScanner(AbstractScanner):
         self.finish_flag = True
 
     def listen(self):
-        test = IP()
-        local_ip = test.src
         sniff(prn=lambda x: self.handler(x),
-              filter='Dst host '+local_ip+' and Udp port 37020',
+              filter='Dst host '+self.local_ip+' and Udp port 37020',
               stop_filter=lambda x: self.stop_sniff.is_set())
 
     def handler(self, pkg):
+        if 'UDP' not in pkg:
+            return
+        if pkg[IP].src != self.local_ip or pkg[UDP].dport != self.port or pkg[UDP].sport != self.port:
+            return
         data = str(pkg.load, 'utf-8')
         try:
             dev_dict = HikvisionUDPScanner.parser(data)
             self.result.append(dev_dict)
         except TypeError as error:
             print(error)
+            return
 
     @staticmethod
     def parser(data) -> dict:
