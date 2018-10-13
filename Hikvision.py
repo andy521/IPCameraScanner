@@ -18,9 +18,7 @@ class HikvisionUDPScanner(AbstractScanner):
     local_ip: str = '127.0.0.1'
     port: int = 37020
     result: list = []
-    finish_flag: bool = False
     listen_thread: threading.Thread
-    stop_sniff = threading.Event()
 
     @staticmethod
     def get_discover_xml():
@@ -57,7 +55,6 @@ class HikvisionUDPScanner(AbstractScanner):
         return pkg
 
     def start(self):
-        self.finish_flag = False
         # 获得发现数据包
         pkg = self.get_discover_pkg()
         # 显示数据包并确定校验和
@@ -72,17 +69,15 @@ class HikvisionUDPScanner(AbstractScanner):
         self.listen_thread.start()
         # verbose参数控制是否显示发送回显
         send(pkg, 1, verbose=0)
-        self.finish_flag = True
 
     def listen(self):
         sniff(prn=lambda x: self.handler(x),
-              filter='Dst host '+self.local_ip+' and Udp port 37020',
-              stop_filter=lambda x: self.stop_sniff.is_set())
+              filter='Dst host '+self.local_ip+' and Udp port 37020')
 
     def handler(self, pkg):
         if 'UDP' not in pkg:
             return
-        if pkg[IP].src != self.local_ip or pkg[UDP].dport != self.port or pkg[UDP].sport != self.port:
+        if pkg[IP].dst != self.local_ip or pkg[UDP].dport != self.port or pkg[UDP].sport != self.port:
             return
         data = str(pkg.load, 'utf-8')
         try:
@@ -97,22 +92,20 @@ class HikvisionUDPScanner(AbstractScanner):
         assert isinstance(data, str)
         # 去除前面的XML描述符
         data = data[38:]
-        print(data)
         recv_xml = minidom.parseString(data)
         recv_root = recv_xml.documentElement
         dev_dict = {}
         if recv_root.nodeName == 'ProbeMatch':
             recv_childnodes = recv_root.childNodes
             for childnode in recv_childnodes:
-                dev_dict[childnode.nodeName] = childnode.childNodes[0].data
+                if isinstance(childnode.childNodes, list) is True:
+                    dev_dict[childnode.nodeName] = childnode.childNodes[0].data
             return dev_dict
         else:
             raise TypeError('不是探测包的返回包，返回包的根结点名称必须是ProbeMatch')
 
     def report(self) -> (bool, list):
-        if self.finish_flag is True:
-            # 读取结果时，首先设置信号量，停止sniff函数抓取包
-            self.stop_sniff.set()
+        if len(self.result) > 0:
             return True, self.result
         else:
             return False, []
@@ -122,6 +115,7 @@ class HikvisionUDPScanner(AbstractScanner):
 class HikvisionHTTPScanner(AbstractScanner):
     dport: int = 0
     result: list = []
+    header_list = ['App-webs/']
     use_ssl: bool = 0
     finish_flag: bool = False
 
@@ -148,9 +142,12 @@ class HikvisionHTTPScanner(AbstractScanner):
             print(error)
         else:
             if response.status_code == 200:
-                self.result.append({'IP': self.dstIP,
-                                    'Port': self.dport,
-                                    'Server Header': response.headers.get('Server')})
+                for header in self.header_list:
+                    if response.headers.get('Server') == header:
+                        self.result.append({'IP': self.dstIP,
+                                            'Port': self.dport,
+                                            'ServerHeader': header})
+                        break
             else:
                 print('Receive HTTP Status ' + response.status_code)
 
@@ -158,9 +155,6 @@ class HikvisionHTTPScanner(AbstractScanner):
 
     def report(self) -> (bool, list):
         if self.finish_flag is True:
-            if self.result == 'App-webs/':
-                return True, self.result
-            else:
-                return True, []
+            return True, self.result
         else:
             return False, []
