@@ -6,6 +6,9 @@
 # 	构造XML作为UDP负载，具体形式通过对官方SDAP工具进行流量分析得到
 # 	在本机任一端口（最好是37020）监听回复包，解析UDP负载中的XML内容
 # 2. HTTP 80端口扫描：判断HTTP响应的Server字段
+#   该方法检查HTTP响应包中的Server字段（HTTP Banner），此方法源于乌云漏洞平台2015年的文章：
+#   https://www.secpulse.com/archives/39342.html
+
 import uuid
 import requests
 from scapy.all import *
@@ -115,7 +118,7 @@ class HikvisionUDPScanner(AbstractScanner):
 class HikvisionHTTPScanner(AbstractScanner):
     dport: int = 0
     result: list = []
-    header_list = ['App-webs/']
+    header_list = ['App-webs/', 'DVRDVS-Webs/', 'DNVRS-Webs/', 'Hikvision-Webs/']
     use_ssl: bool = 0
     finish_flag: bool = False
 
