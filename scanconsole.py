@@ -26,6 +26,3 @@ def http_scan(ip, port, use_ssl):
 if __name__ == '__main__':
     udp_scan()
     http_scan(ip='172.16.0.2', port=80, use_ssl=False)
-    # ip = '172.16.0.'
-    # for i in range(1, 254):
-    #     http_scan(ip=ip + str(i), port=80, use_ssl=False)
