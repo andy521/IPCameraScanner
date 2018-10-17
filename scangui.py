@@ -26,6 +26,7 @@ def udp_scan_handler():
     i = 1
     for item in result:
         print(item)
+        # 将结果插入界面的列表中
         dev_list_tree.insert('', 'end', i, text=i, values=(
             '海康威视',
             item['DeviceDescription'],
@@ -36,8 +37,9 @@ def udp_scan_handler():
             item['SoftwareVersion'],
             item['DSPVersion']
         ))
-        i = i + 1
+        # 更新界面
         dev_list_tree.update_idletasks()
+        i = i + 1
 
 
 def http_scan_handler():
@@ -151,7 +153,6 @@ if __name__ == '__main__':
     for column_name, column_width in zip(dev_list_tree['columns'], dev_list_column_width):
         dev_list_tree.column(column_name, width=column_width, anchor='w')
         dev_list_tree.heading(column_name, text=column_name)
-
     dev_list_tree.pack(side=LEFT, fill=X, expand=YES)
     dev_list_frame.pack(side=TOP, fill=X, padx=5, pady=5, expand=YES, anchor='n')
     main_panedwindow.add(dev_list_frame)
