@@ -3,57 +3,109 @@ from tkinter.filedialog import *
 from tkinter.ttk import Treeview
 from Hikvision import *
 
+result = []
+
 
 def start_udp_scan():
-    pass
+    udp_scan_thread = threading.Thread(target=udp_scan_handler, name='Thread-UDP-Scan')
+    udp_scan_thread.setDaemon(True)
+    udp_scan_thread.start()
 
 
 def start_http_scan():
-    pass
+    http_scan_thread = threading.Thread(target=http_scan_handler, name='Thread-UDP-Scan')
+    http_scan_thread.setDaemon(True)
+    http_scan_thread.start()
 
 
 def udp_scan_handler():
+    global result
     result = udp_scan()
     i = 1
     for item in result:
         packet_list_tree.insert(str(i), 'end', i, text='1', values=(
-            item[''], 2, 3, 4, 5, 6, 7, 999))
+            item['DeviceDescription'],
+            item['DeviceSN'],
+            item['CommandPort'],
+            item['HttpPort'],
+            item['MAC'],
+            item['IPv4Address'],
+            item['SoftwareVersion'],
+            item['DSPVersion']
+        ))
         i = i + 1
     packet_list_tree.update_idletasks()
 
 
 def http_scan_handler():
+    global result
     result = http_scan()
+    i = 1
+    for item in result:
+        # packet_list_tree.insert(str(i), 'end', i, text='1', values=())
+        i = i + 1
+    packet_list_tree.update_idletasks()
 
 
 def udp_scan():
     s = HikvisionUDPScanner(dst_ip='239.255.255.250')
     s.start()
     while True:
-        is_finished, result = s.report()
+        is_finished, res = s.report()
         if is_finished is True:
-            return result
+            return res
 
 
 def http_scan(ip, port, use_ssl):
     s = HikvisionHTTPScanner(dst_ip=ip, dport=port, use_ssl=use_ssl)
     s.start()
     while True:
-        is_finished, result = s.report()
+        is_finished, res = s.report()
         if is_finished is True:
-            return result
+            return res
 
 
 def clear():
-    pass
+    global result
+    result = []
+    for widget in packet_list_tree.winfo_children():
+        widget.destroy()
 
 
 def quit_program():
     exit(0)
 
 
-def on_click_packet_list_tree():
-    pass
+def on_click_packet_list_tree(event):
+    global result
+    selected_item = event.widget.selection()
+    select_res_item = result[int(selected_item[0]) - 1]
+    details_window = tkinter.Tk()
+    details_window.title('扫描结果详细信息')
+    details_window.resizable(width=False, height=True)
+    for item in select_res_item:
+        row = Frame(details_window)
+        label = Label(row, width=15, text=item, anchor='e')
+        entry = Entry(row, font=('Courier', '12', 'bold'), state='disable')
+        entry.insert(0, select_res_item[item])
+        row.pack(side=TOP, fill=X, padx=5, pady=5)
+        label.pack(side=LEFT)
+        entry.pack(side=RIGHT, expand=YES, fill=X)
+    details_window.mainloop()
+
+
+def create_protocol_editor(root, field_names):
+    entries = []
+    for field in field_names:
+        row = Frame(root)
+        label = Label(row, width=15, text=field, anchor='e')
+        # 设置编辑框为等宽字体
+        entry = Entry(row, font=('Courier', '12', 'bold'), state='normal')
+        row.pack(side=TOP, fill=X, padx=5, pady=5)
+        label.pack(side=LEFT)
+        entry.pack(side=RIGHT, expand=YES, fill=X)
+        entries.append(entry)
+    return entries
 
 
 class StatusBar(Frame):
@@ -73,7 +125,8 @@ class StatusBar(Frame):
 
 if __name__ == '__main__':
     tk = tkinter.Tk()
-    tk.title("摄像机扫描器")
+    tk.title('摄像机扫描器')
+    tk.resizable(width=False, height=True)
     main_panedwindow = PanedWindow(tk, sashrelief=RAISED, sashwidth=5, orient=VERTICAL)
     toolbar = Frame(tk)
     start_udp_scan_button = Button(toolbar, width=8, text="UDP扫描", command=start_udp_scan)
