@@ -22,6 +22,7 @@ class HikvisionUDPScanner(AbstractScanner):
     port: int = 37020
     result: list = []
     listen_thread: threading.Thread
+    stop_sniff = threading.Event()
 
     @staticmethod
     def get_discover_xml():
@@ -75,7 +76,8 @@ class HikvisionUDPScanner(AbstractScanner):
 
     def listen(self):
         sniff(prn=lambda x: self.handler(x),
-              filter='Dst host '+self.local_ip+' and Udp port 37020')
+              filter='Dst host '+self.local_ip+' and Udp port 37020',
+              stop_filter=lambda x: self.stop_sniff.is_set())
 
     def handler(self, pkg):
         if 'UDP' not in pkg:
@@ -112,6 +114,10 @@ class HikvisionUDPScanner(AbstractScanner):
             return True, self.result
         else:
             return False, []
+
+    def stop(self):
+        if self.stop_sniff.is_set() is False:
+            self.stop_sniff.set()
 
 
 # HTTP 80端口扫描：判断HTTP响应的Server字段
